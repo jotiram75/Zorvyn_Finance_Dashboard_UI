@@ -2,6 +2,8 @@
 
 A premium, interactive personal finance management dashboard built with React, TypeScript, and Vite. Optimized for evaluation with clear role simulation, automated insights, and data persistence.
 
+**Live Demo:** [https://zorvyn-ui.vercel.app/](https://zorvyn-ui.vercel.app/)
+
 ---
 
 ## ✅ Requirement Checklist & Implementation
