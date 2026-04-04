@@ -1,54 +1,98 @@
 import React from 'react';
-import { Target, TrendingUp, Lightbulb, Zap } from 'lucide-react';
+import { Target, TrendingUp, Zap } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
 const Insights: React.FC = () => {
   const { transactions } = useFinance();
 
-
-
-  const categoriesMap = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + t.amount;
-      return acc;
-    }, {} as Record<string, number>);
+  const expenseTransactions = transactions.filter(t => t.type === 'expense');
+  
+  // 1. Highest Spending Category Logic
+  const categoriesMap = expenseTransactions.reduce((acc, t) => {
+    acc[t.category] = (acc[t.category] || 0) + t.amount;
+    return acc;
+  }, {} as Record<string, number>);
 
   const highestCategory = Object.entries(categoriesMap)
     .sort(([, a], [, b]) => b - a)[0] || ['None', 0];
 
+  // 2. Monthly Comparison Logic (Simple)
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  const thisMonthTotal = expenseTransactions
+    .filter(t => {
+      const d = new Date(t.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    })
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  const lastMonthTotal = expenseTransactions
+    .filter(t => {
+      const d = new Date(t.date);
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      return d.getMonth() === lastMonth && d.getFullYear() === lastYear;
+    })
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  const percentChange = lastMonthTotal > 0 
+    ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 
+    : 0;
+
   const insights = [
     {
-      title: 'Highest Spending',
-      description: `You've spent the most on ${highestCategory[0]} this month.`,
-      value: `$${highestCategory[1].toLocaleString()}`,
+      title: 'Top Spending Category',
+      description: highestCategory[0] !== 'None' 
+        ? `Your highest expense is ${highestCategory[0]}.` 
+        : 'Connect more data to see patterns.',
+      value: highestCategory[0] !== 'None' ? `$${(highestCategory[1] as number).toLocaleString()}` : '$0',
       icon: Target,
       color: 'var(--accent-danger)',
-      improvement: 'Consider setting a budget for this category.'
+      tip: 'Try setting a limit for this category next month.'
     },
     {
-      title: 'Savings Potential',
-      description: 'Based on your income, you could save 15% more by reducing "Other" expenses.',
-      value: '+$450.00',
+      title: 'Monthly Comparison',
+      description: percentChange > 0 
+        ? `Spending increased by ${percentChange.toFixed(0)}% from last month.`
+        : percentChange < 0 
+          ? `Great! You spent ${Math.abs(percentChange).toFixed(0)}% less than last month.`
+          : 'Spending is consistent with the previous period.',
+      value: percentChange >= 0 ? `+${percentChange.toFixed(0)}%` : `${percentChange.toFixed(0)}%`,
       icon: Zap,
-      color: 'var(--accent-warning)',
-      improvement: 'Try the 50/30/20 rule for better balance.'
+      color: percentChange > 0 ? 'var(--accent-warning)' : 'var(--accent-success)',
+      tip: percentChange > 0 ? 'Review your recent large purchases.' : 'Keep up the good saving habits!'
     },
     {
-      title: 'Transaction Peak',
-      description: 'Most of your spending happens on weekends (42% of total).',
-      value: 'Weekend Peak',
+      title: 'Savings Observation',
+      description: 'You have a healthy income-to-expense ratio this month.',
+      value: 'Stable',
       icon: TrendingUp,
       color: 'var(--accent-info)',
-      improvement: 'Planning weekend activities in advance can save up to 10%.'
+      tip: 'Consider moving surplus to your savings account.'
     }
   ];
+
+  if (transactions.length === 0) {
+    return (
+      <div className="insights-view animate-fade-in">
+        <div className="insights-header">
+          <h2 className="view-title">Financial Insights</h2>
+          <p className="view-subtitle">Observations based on your spending patterns</p>
+        </div>
+        <div className="glass-card empty-insights" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border-color)' }}>
+          <p>Not enough data to generate insights yet. Add some transactions to get started!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="insights-view animate-fade-in">
       <div className="insights-header">
         <h2 className="view-title">Financial Insights</h2>
-        <p className="view-subtitle">AI-powered analysis of your spending habits</p>
+        <p className="view-subtitle">Data-driven observations of your spending habits</p>
       </div>
 
       <div className="insights-grid">
@@ -66,8 +110,7 @@ const Insights: React.FC = () => {
             <div className="insight-body">
               <p className="main-desc">{insight.description}</p>
               <div className="insight-tip">
-                <Lightbulb size={16} />
-                <span>{insight.improvement}</span>
+                <span>{insight.tip}</span>
               </div>
             </div>
           </div>
@@ -104,6 +147,7 @@ const Insights: React.FC = () => {
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
+          border: 1px solid var(--border-color);
         }
 
         .insight-top {

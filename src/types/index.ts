@@ -20,6 +20,8 @@ export interface FinanceState {
 }
 
 export interface FinanceContextType extends FinanceState {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
   setRole: (role: Role) => void;
   setSearchQuery: (query: string) => void;
   setCategoryFilter: (category: string) => void;

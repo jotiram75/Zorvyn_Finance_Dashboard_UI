@@ -120,10 +120,13 @@ const SummaryCards: React.FC = () => {
           margin-bottom: 0.5rem;
         }
 
-        .card-value {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #fff;
+        @media (max-width: 480px) {
+          .summary-grid {
+            grid-template-columns: 1fr;
+          }
+          .card-value {
+             font-size: 1.5rem;
+          }
         }
       `}</style>
     </div>

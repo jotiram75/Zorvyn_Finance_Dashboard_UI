@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { X, Save } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
-import type { TransactionType } from '../types';
+import type { Transaction, TransactionType } from '../types';
 
 interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  editingTransaction?: Transaction | null;
 }
 
-const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose }) => {
-  const { addTransaction } = useFinance();
+const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, editingTransaction }) => {
+  const { addTransaction, updateTransaction } = useFinance();
   const [formData, setFormData] = useState({
     description: '',
     amount: '',
@@ -18,17 +19,48 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose }) 
     type: 'expense' as TransactionType,
   });
 
+  React.useEffect(() => {
+    if (editingTransaction) {
+      setFormData({
+        description: editingTransaction.description,
+        amount: editingTransaction.amount.toString(),
+        category: editingTransaction.category,
+        date: editingTransaction.date,
+        type: editingTransaction.type,
+      });
+    } else {
+      setFormData({
+        description: '',
+        amount: '',
+        category: 'Food',
+        date: new Date().toISOString().split('T')[0],
+        type: 'expense',
+      });
+    }
+  }, [editingTransaction, isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addTransaction({
-      description: formData.description,
-      amount: parseFloat(formData.amount),
-      category: formData.category,
-      date: formData.date,
-      type: formData.type,
-    });
+    if (editingTransaction) {
+      updateTransaction({
+        ...editingTransaction,
+        description: formData.description,
+        amount: parseFloat(formData.amount),
+        category: formData.category,
+        date: formData.date,
+        type: formData.type,
+      });
+    } else {
+      addTransaction({
+        description: formData.description,
+        amount: parseFloat(formData.amount),
+        category: formData.category,
+        date: formData.date,
+        type: formData.type,
+      });
+    }
     onClose();
     setFormData({
       description: '',
@@ -43,7 +75,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose }) 
     <div className="modal-overlay">
       <div className="modal-content glass-card animate-fade-in">
         <div className="modal-header">
-          <h3>Add New Transaction</h3>
+          <h3>{editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}</h3>
           <button onClick={onClose} className="close-btn"><X size={20} /></button>
         </div>
 
@@ -115,7 +147,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose }) 
             <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
             <button type="submit" className="save-btn">
               <Save size={18} />
-              <span>Save Transaction</span>
+              <span>{editingTransaction ? 'Update' : 'Save'} Transaction</span>
             </button>
           </div>
         </form>

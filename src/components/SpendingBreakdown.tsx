@@ -25,31 +25,37 @@ const SpendingBreakdown: React.FC = () => {
       </div>
 
       <div className="chart-wrapper">
-        <ResponsiveContainer width="100%" height={260}>
-          <PieChart>
-            <Pie
-              data={data}
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="rgba(0,0,0,0)" />
-              ))}
-            </Pie>
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'var(--bg-sidebar)', 
-                borderColor: 'var(--border-color)',
-                borderRadius: '8px',
-                color: '#fff'
-              }}
-              formatter={(value: any) => `$${Number(value).toFixed(2)}`}
-            />
-            <Legend verticalAlign="bottom" height={36} iconType="circle" />
-          </PieChart>
-        </ResponsiveContainer>
+        {data.length > 0 ? (
+          <ResponsiveContainer width="100%" height={260}>
+            <PieChart>
+              <Pie
+                data={data}
+                innerRadius={60}
+                outerRadius={80}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="rgba(0,0,0,0)" />
+                ))}
+              </Pie>
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'var(--bg-sidebar)', 
+                  borderColor: 'var(--border-color)',
+                  borderRadius: '8px',
+                  color: '#fff'
+                }}
+                formatter={(value: any) => `$${Number(value).toFixed(2)}`}
+              />
+              <Legend verticalAlign="bottom" height={36} iconType="circle" />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="empty-pie-state">
+            <p>No data available</p>
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -74,6 +80,21 @@ const SpendingBreakdown: React.FC = () => {
         .chart-wrapper {
           width: 100%;
           height: 300px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .empty-pie-state {
+          color: var(--text-muted);
+          font-size: 0.85rem;
+          border: 1px dashed var(--border-color);
+          width: 100%;
+          height: 200px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--radius-md);
         }
       `}</style>
     </div>

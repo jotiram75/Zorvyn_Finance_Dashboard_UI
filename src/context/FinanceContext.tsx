@@ -27,10 +27,22 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('finance_theme') as 'light' | 'dark') || 'light';
+  });
 
   useEffect(() => {
     localStorage.setItem('finance_transactions', JSON.stringify(transactions));
   }, [transactions]);
+
+  useEffect(() => {
+    localStorage.setItem('finance_theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
 
   const addTransaction = (t: Omit<Transaction, 'id'>) => {
     if (role !== 'admin') return;
@@ -56,6 +68,8 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
         searchQuery,
         categoryFilter,
         typeFilter,
+        theme,
+        toggleTheme,
         setRole,
         setSearchQuery,
         setCategoryFilter,

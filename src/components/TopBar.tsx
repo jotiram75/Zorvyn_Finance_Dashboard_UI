@@ -1,34 +1,50 @@
 import React from 'react';
-import { Search, Bell, User } from 'lucide-react';
+import { Search, Bell, Settings, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
 const TopBar: React.FC = () => {
-  const { searchQuery, setSearchQuery } = useFinance();
+  const { searchQuery, setSearchQuery, role, setRole } = useFinance();
 
   return (
     <header className="topbar">
       <div className="search-wrapper">
-        <Search size={18} className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search transactions, categories..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className="search-box">
+          <Search size={18} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div className="search-shortcut">
+            <Settings size={14} />
+          </div>
+        </div>
       </div>
 
-      <div className="topbar-actions">
-        <button className="action-btn">
+      <div className="topbar-right">
+        <div className="role-selector-box">
+          <div 
+            className={`role-toggle-btn ${role === 'admin' ? 'admin' : 'viewer'}`}
+            onClick={() => setRole(role === 'admin' ? 'viewer' : 'admin')}
+          >
+            {role === 'admin' ? <ShieldCheck size={18} /> : <ShieldAlert size={18} />}
+            <span>{role.toUpperCase()} MODE</span>
+          </div>
+        </div>
+
+        <button className="icon-btn-ghost">
           <Bell size={20} />
           <div className="notification-dot"></div>
         </button>
-        <div className="user-profile">
-          <div className="user-info">
-            <p className="user-name">Alex Smith</p>
-            <p className="user-role">Finance Lead</p>
+
+        <div className="user-profile-simple">
+          <div className="user-avatar-small">
+            <img src="https://i.pravatar.cc/150?u=alex" alt="Alex Smith" />
           </div>
-          <div className="user-avatar">
-            <User size={20} />
+          <div className="user-meta">
+            <p className="user-name">Alex Williamson</p>
+            <p className="user-email">muraddco@gmail.com</p>
           </div>
         </div>
       </div>
@@ -40,106 +56,178 @@ const TopBar: React.FC = () => {
           justify-content: space-between;
           padding: 1rem 0;
           margin-bottom: 2rem;
+          width: 100%;
         }
 
         .search-wrapper {
+          flex: 1;
+        }
+
+        .search-box {
           position: relative;
           width: 400px;
+          display: flex;
+          align-items: center;
         }
 
         .search-icon {
           position: absolute;
-          left: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
+          left: 1.25rem;
           color: var(--text-muted);
         }
 
-        .search-wrapper input {
+        .search-box input {
           width: 100%;
-          background: var(--bg-card);
+          background: #111418;
           border: 1px solid var(--border-color);
-          padding: 0.75rem 1rem 0.75rem 3rem;
-          border-radius: var(--radius-md);
-          color: #fff;
+          padding: 0.8rem 1.25rem 0.8rem 3.25rem;
+          border-radius: 12px;
+          color: var(--text-primary);
           font-size: 0.9rem;
           outline: none;
-          transition: var(--transition-fast);
         }
 
-        .search-wrapper input:focus {
-          border-color: var(--accent-primary);
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
-          background: rgba(23, 23, 26, 0.9);
+        .search-shortcut {
+          position: absolute;
+          right: 0.75rem;
+          width: 28px;
+          height: 28px;
+          background: #fff;
+          color: #000;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
-        .topbar-actions {
+        .topbar-right {
           display: flex;
           align-items: center;
           gap: 1.5rem;
         }
 
-        .action-btn {
-          background: var(--bg-card);
-          color: var(--text-secondary);
-          width: 40px;
-          height: 40px;
+        .role-selector-box {
+          margin-right: 0.5rem;
+        }
+
+        .role-toggle-btn {
           display: flex;
           align-items: center;
-          justify-content: center;
-          border-radius: var(--radius-md);
-          border: 1px solid var(--border-color);
+          gap: 0.75rem;
+          padding: 0.6rem 1rem;
+          border-radius: 10px;
+          font-size: 0.75rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: 1px solid transparent;
+        }
+
+        .role-toggle-btn.admin {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+          border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .role-toggle-btn.viewer {
+          background: rgba(45, 96, 255, 0.1);
+          color: #2d60ff;
+          border-color: rgba(45, 96, 255, 0.2);
+        }
+
+        .icon-btn-ghost {
+          background: transparent;
+          color: var(--text-secondary);
           position: relative;
+          padding: 0.5rem;
+          border-radius: 50%;
         }
 
         .notification-dot {
           position: absolute;
-          top: 8px;
-          right: 8px;
+          top: 0.5rem;
+          right: 0.5rem;
           width: 8px;
           height: 8px;
           background: var(--accent-danger);
           border-radius: 50%;
-          border: 2px solid var(--bg-sidebar);
+          border: 2px solid var(--bg-main);
         }
 
-        .user-profile {
+        .user-profile-simple {
           display: flex;
           align-items: center;
-          gap: 1rem;
-          padding: 0.25rem 0.5rem;
-          border-radius: var(--radius-md);
+          gap: 0.75rem;
           cursor: pointer;
         }
 
-        .user-info {
-          text-align: right;
+        .user-avatar-small {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        .user-avatar-small img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .user-meta {
+          text-align: left;
         }
 
         .user-name {
           font-size: 0.9rem;
-          font-weight: 600;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: 0.1rem;
         }
 
-        .user-role {
+        .user-email {
           font-size: 0.75rem;
           color: var(--text-muted);
         }
 
-        .user-avatar {
-          width: 36px;
-          height: 36px;
-          background: var(--accent-primary);
-          border-radius: var(--radius-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
+        @media (max-width: 900px) {
+          .role-toggle-btn span { display: none; }
         }
 
-        @media (max-width: 600px) {
-          .search-wrapper { width: 200px; }
-          .user-name { display: none; }
+        @media (max-width: 768px) {
+          .topbar {
+             margin-bottom: 1rem;
+             padding: 0.5rem 0;
+          }
+
+          .search-box {
+             width: 44px;
+             background: transparent;
+             border: none;
+             padding-left: 0;
+          }
+
+          .search-box input, .search-shortcut {
+             display: none;
+          }
+
+          .search-icon {
+             position: static;
+             color: var(--text-primary);
+          }
+
+          .user-meta, .role-selector-box {
+             display: none;
+          }
+
+          .topbar-right {
+             gap: 1rem;
+          }
+
+          .user-avatar-small {
+             width: 32px;
+             height: 32px;
+          }
         }
       `}</style>
     </header>

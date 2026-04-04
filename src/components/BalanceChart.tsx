@@ -1,112 +1,105 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useFinance } from '../context/FinanceContext';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
+import { ArrowRight } from 'lucide-react';
 
-const BalanceChart: React.FC = () => {
-  const { transactions } = useFinance();
+const data = [
+  { name: 'Jan', value: 1800, secondary: 2200 },
+  { name: 'Feb', value: 2800, secondary: 3000 },
+  { name: 'Mar', value: 4200, secondary: 4500 },
+  { name: 'Apr', value: 2400, secondary: 3200 },
+  { name: 'May', value: 1500, secondary: 2000 },
+  { name: 'Jun', value: 3800, secondary: 4000 },
+  { name: 'Jul', value: 2200, secondary: 3400 },
+  { name: 'Aug', value: 4000, secondary: 4200 },
+  { name: 'Sep', value: 2800, secondary: 3600 },
+];
 
-  // Simple data transformation for the chart: daily balance trend
-  const sortedTransactions = [...transactions].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime());
-  
-  let currentBalance = 0;
-  const chartData = sortedTransactions.map(t => {
-    currentBalance += (t.type === 'income' ? t.amount : -t.amount);
-    return {
-      date: t.date,
-      balance: currentBalance,
-    };
-  });
-
+const CashflowChart: React.FC = () => {
   return (
-    <div className="glass-card chart-container animate-fade-in" style={{ animationDelay: '0.2s' }}>
-      <div className="chart-header">
-        <h3 className="chart-title">Balance Trend</h3>
-        <p className="chart-subtitle">Daily overview of your wealth</p>
+    <div className="cashflow-card glass-card">
+      <div className="card-header-row">
+        <h3>Cashflow</h3>
+        <div className="card-date-tag">
+          <span>2025</span>
+          <ArrowRight size={14} className="rotate-90" />
+        </div>
       </div>
       
       <div className="chart-wrapper">
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent-primary)" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="var(--accent-primary)" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart data={data} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="0" vertical={false} stroke="rgba(255,255,255,0.05)" />
             <XAxis 
-              dataKey="date" 
-              stroke="var(--text-muted)" 
-              fontSize={12} 
+              dataKey="name" 
+              axisLine={false} 
               tickLine={false} 
-              axisLine={false}
-              tickFormatter={(str) => {
-                const date = new Date(str);
-                return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-              }}
+              tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+              dy={10}
             />
             <YAxis 
-              stroke="var(--text-muted)" 
-              fontSize={12} 
+              axisLine={false} 
               tickLine={false} 
-              axisLine={false}
-              tickFormatter={(val) => `$${val}`}
+              tick={{ fill: 'var(--text-muted)', fontSize: 12 }} 
+              tickFormatter={(v) => `$${v / 1000}k`}
             />
             <Tooltip 
+              cursor={{ fill: 'rgba(255,255,255,0.03)' }}
               contentStyle={{ 
-                backgroundColor: 'var(--bg-sidebar)', 
-                borderColor: 'var(--border-color)',
-                borderRadius: '8px',
-                color: '#fff'
+                backgroundColor: '#151921', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '10px'
               }}
-              itemStyle={{ color: 'var(--accent-primary)' }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="balance" 
-              stroke="var(--accent-primary)" 
-              fillOpacity={1} 
-              fill="url(#colorBalance)" 
-              strokeWidth={3}
-            />
-          </AreaChart>
+            <Bar dataKey="secondary" fill="rgba(255,255,255,0.05)" radius={[6, 6, 0, 0]} barSize={20} />
+            <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={20}>
+              {data.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={index % 2 === 0 ? 'var(--accent-primary)' : '#4d7cfe'} />
+              ))}
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
       <style>{`
-        .chart-container {
-          grid-column: span 2;
+        .cashflow-card {
           padding: 1.5rem;
+          background: var(--bg-card);
         }
 
-        .chart-header {
-          margin-bottom: 2rem;
+        .card-header-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
 
-        .chart-title {
-          font-size: 1.25rem;
-          font-weight: 600;
-        }
-
-        .chart-subtitle {
-          color: var(--text-muted);
+        .card-date-tag {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 0.4rem 0.8rem;
+          border-radius: 20px;
           font-size: 0.85rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--text-secondary);
         }
 
         .chart-wrapper {
-          width: 100%;
-          height: 300px;
+          margin-top: 1.5rem;
         }
 
-        @media (max-width: 1024px) {
-          .chart-container {
-            grid-column: span 1;
-          }
-        }
+        .rotate-90 { transform: rotate(90deg); }
       `}</style>
     </div>
   );
 };
 
-export default BalanceChart;
+export default CashflowChart;
