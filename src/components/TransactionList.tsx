@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Filter, ArrowUpRight, ArrowDownRight, MoreVertical, Trash2, Edit2, Plus } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Trash2, Edit2, Plus } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
-import type { Transaction, TransactionType } from '../types';
+import type { Transaction } from '../types';
 
 interface TransactionListProps {
   onAddClick: () => void;

@@ -1,13 +1,11 @@
 import React from 'react';
-import { Target, TrendingUp, AlertTriangle, Lightbulb, Zap } from 'lucide-react';
+import { Target, TrendingUp, Lightbulb, Zap } from 'lucide-react';
 import { useFinance } from '../context/FinanceContext';
 
 const Insights: React.FC = () => {
   const { transactions } = useFinance();
 
-  const totalExpenses = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => acc + t.amount, 0);
+
 
   const categoriesMap = transactions
     .filter(t => t.type === 'expense')

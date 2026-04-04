@@ -45,7 +45,7 @@ const SpendingBreakdown: React.FC = () => {
                 borderRadius: '8px',
                 color: '#fff'
               }}
-              formatter={(value: number) => `$${value.toFixed(2)}`}
+              formatter={(value: any) => `$${Number(value).toFixed(2)}`}
             />
             <Legend verticalAlign="bottom" height={36} iconType="circle" />
           </PieChart>
