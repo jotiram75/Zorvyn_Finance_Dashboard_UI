@@ -28,7 +28,7 @@ export const FinanceProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (localStorage.getItem('finance_theme') as 'light' | 'dark') || 'light';
+    return (localStorage.getItem('finance_theme') as 'light' | 'dark') || 'dark';
   });
 
   useEffect(() => {

@@ -35,7 +35,7 @@ A premium, interactive personal finance management dashboard built with React, T
 - **Clean Architecture**: Modularity across components ensured via custom hooks (`useFinance`).
 
 ### 6. UI/UX Excellence
-- **Premium Aesthetics**: "Zorvyn Deep Dark" theme featuring glassmorphism and subtle micro-animations.
+- **Premium Aesthetics**: "Zorvyn Deep Dark" theme (set as default) featuring glassmorphism and subtle micro-animations.
 - **Responsiveness**: Fluid layout using CSS Grid that adapts from ultra-wide monitors to mobile viewports.
 - **Empty States**: Custom placeholders for graphs and lists when no data is available.
 
