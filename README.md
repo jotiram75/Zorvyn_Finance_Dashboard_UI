@@ -71,12 +71,13 @@ A premium, interactive personal finance management dashboard built with React, T
 ## Screenshots
 
 - Dashboard Overview
-- Transactions Table
-- Role Switching
-- Insights Section
+  ![Dashboard Overview](image-1.png)
 
-![Dashboard Overview](image-1.png)
 ![Dashboard Overview-1](image-2.png)
-![Transactions Table](image-3.png)
-![View Role](image-4.png)
-![Insights section](image-5.png)
+
+- Transactions Table
+  ![Transactions Table](image-3.png)
+- Role Switching
+  ![View Role](image-4.png)
+- Insights Section
+  ![Insights section](image-5.png)
